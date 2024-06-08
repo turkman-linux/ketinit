@@ -12,6 +12,8 @@ int main(int argc, char** argv){
             return service(argv[1], STOP);
         }else if(strcmp(argv[2], "status") == 0){
             return service(argv[1], STATUS) == 0;
+        }else if(strcmp(argv[2], "kill") == 0){
+            return service(argv[1], KILL) == 0;
         }
     }
     if(getpid() == 1){

@@ -34,6 +34,14 @@ int service(char* name, int status){
             }
             break;
         case STOP:
+            if (fork()){
+                cgroup_add(name);
+                redirect_log(name);
+                execute_service(name, "stop");
+            }
+            cgroup_kill(name);
+            break;
+        case KILL:
             cgroup_kill(name);
             break;
         case STATUS:

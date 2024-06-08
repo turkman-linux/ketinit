@@ -18,3 +18,4 @@ void redirect_log(const char* name);
 #define START 1
 #define STOP 0
 #define STATUS 2
+#define KILL 3
