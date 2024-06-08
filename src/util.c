@@ -43,28 +43,3 @@ void create_dir(char *dir) {
     if(!isdir(tmp))
         c_mkdir(tmp, 0755);
 }
-
-size_t get_file_size(const char *filename) {
-    int file_descriptor;
-    size_t file_size;
-
-    // Open the file
-    file_descriptor = open(filename, O_RDONLY);
-    if (file_descriptor == -1) {
-        perror("Error opening file");
-        return -1;
-    }
-
-    // Move the file pointer to the end of the file
-    file_size = lseek(file_descriptor, 0, SEEK_END);
-    if (file_size == -1) {
-        perror("Error getting file size");
-        close(file_descriptor);
-        return -1;
-    }
-
-    // Close the file
-    close(file_descriptor);
-
-    return file_size;
-}

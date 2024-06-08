@@ -46,5 +46,9 @@ int cgroup_exists(const char* cgroup_name){
 bool cgroup_check_running(const char* cgroup_name) {
     char cgroup_path[256];
     snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/%s/cgroup.procs", cgroup_name);
-    return get_file_size(cgroup_path) != 0;
+    FILE* file = fopen(cgroup_path, "r");
+    char buffer[1];
+    size_t bytes_read = fread(buffer, 1, sizeof(buffer), file);
+    fclose(file);
+    return bytes_read != 0;
 }
