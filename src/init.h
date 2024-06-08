@@ -13,6 +13,8 @@ int service(char* name, int status);
 
 void init_mount();
 
+void redirect_log(const char* name);
+
 #define START 1
 #define STOP 0
 #define STATUS 2

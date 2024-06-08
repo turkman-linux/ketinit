@@ -29,6 +29,7 @@ int service(char* name, int status){
             cgroup_init(name);
             if (fork()){
                 cgroup_add(name);
+                redirect_log(name);
                 execute_service(name, "start");
             }
             break;

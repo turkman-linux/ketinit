@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
@@ -42,4 +43,24 @@ void create_dir(char *dir) {
         }
     if(!isdir(tmp))
         c_mkdir(tmp, 0755);
+}
+
+void redirect_log(const char* name){
+    FILE *out_file;
+    char log_path[256];
+    create_dir("/var/log/services/");
+    snprintf(log_path, sizeof(log_path), "/var/log/services/%s.log", name);
+    
+    // Open the file to redirect both stdout and stderr
+    out_file = freopen(log_path, "w", stdout);
+    if (out_file == NULL) {
+        perror("freopen");
+        exit(EXIT_FAILURE);
+    }
+
+    // Redirect stderr to the same file as stdout
+    if (dup2(fileno(out_file), STDERR_FILENO) == -1) {
+        perror("dup2");
+        exit(EXIT_FAILURE);
+    }
 }
