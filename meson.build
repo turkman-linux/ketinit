@@ -6,6 +6,6 @@ init_files = [
     'src/util.c',
     'src/main.c'
 ]
-
+add_project_arguments(['-Wall', '-Wextra', '-Werror'], language: 'c')
 executable('init', init_files)
 

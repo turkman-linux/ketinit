@@ -10,6 +10,7 @@ bool cgroup_check_running(const char* cgroup_name);
 int cgroup_exists(const char* cgroup_name);
 
 int service(char* name, int status);
+char* get_value(char* name, char* variable);
 
 void init_mount();
 
@@ -19,3 +20,7 @@ void redirect_log(const char* name);
 #define STOP 0
 #define STATUS 2
 #define KILL 3
+
+#include <string.h>
+#define startswith(A,B) \
+    strncmp(A, B, strlen(B)) == 0
