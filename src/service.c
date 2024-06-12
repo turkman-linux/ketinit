@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/mount.h>
+#include <sys/wait.h>
 
 #include "init.h"
 
@@ -9,7 +10,7 @@ static void execute_service(char* name, char* arg){
     char command_path[256];
     snprintf(command_path, sizeof(command_path), "/etc/boot.d/%s", name);
     char* args[] = {command_path, arg, NULL};
-    char* fname = get_value(name, "name");
+    //char* fname = get_value(name, "name");
     execvp(command_path, args);
 }
 
@@ -27,23 +28,41 @@ int start_service(char* name){
     return service(name,START);
 }
 
+void service_exit_event(char* name, int status){
+    if(status == 0){
+        printf("[OK] %s\n", name);
+    } else {
+        printf("[FAIL] %s (%d)\n", name, status / 256);
+    }
+}
+
 int service(char* name, int status){
+    int exit_code;
+    int pid;
     switch(status) {
         case START:
             cgroup_init(name);
-            if (fork()){
+            pid = fork();
+            if (pid == 0){
                 cgroup_add(name);
                 redirect_log(name);
                 execute_service(name, "start");
             }
+            waitpid(pid, &exit_code,0);
+            service_exit_event(name, exit_code);
+            exit(exit_code);
             break;
         case STOP:
-            if (fork()){
+            pid = fork();
+            if (pid == 0){
                 cgroup_add(name);
                 redirect_log(name);
                 execute_service(name, "stop");
             }
+            waitpid(pid, &exit_code,0);
             cgroup_kill(name);
+            service_exit_event(name, exit_code);
+            exit(exit_code);
             break;
         case KILL:
             cgroup_kill(name);

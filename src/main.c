@@ -30,10 +30,11 @@ int main(int argc, char** argv){
         if(strlen(de->d_name) > 0 && de->d_name[0] == '.'){
             continue;
         }
-        if(fork()){
+        if(fork() == 0){
             service(de->d_name, START);
         }
     }
+    puts("yuh");
     closedir(dr);
     return 0;
 }

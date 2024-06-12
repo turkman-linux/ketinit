@@ -7,5 +7,6 @@ init_files = [
     'src/main.c'
 ]
 add_project_arguments(['-Wall', '-Wextra', '-Werror'], language: 'c')
+add_project_arguments(['-fno-plt', '-fvisibility=hidden', '-s'], language: 'c')
 executable('init', init_files)
 
