@@ -7,8 +7,9 @@
 
 static void execute_service(char* name, char* arg){
     char command_path[256];
-    snprintf(command_path, sizeof(command_path), "/etc/services/%s", name);
+    snprintf(command_path, sizeof(command_path), "/etc/boot.d/%s", name);
     char* args[] = {command_path, arg, NULL};
+    char* fname = get_value(name, "name");
     execvp(command_path, args);
 }
 
@@ -63,7 +64,7 @@ int service(char* name, int status){
 
 char* get_value(char* name, char* variable){
     char path[256];
-    snprintf(path, sizeof(path), "/etc/services/%s", name);
+    snprintf(path, sizeof(path), "/etc/boot.d/%s", name);
     FILE *file = fopen(path,"r");
     char line[1024];
     if (file == NULL){
@@ -73,8 +74,13 @@ char* get_value(char* name, char* variable){
         if(startswith(line, variable)) {
             int s = strlen(line) - strlen(variable);
             char* ret = calloc(s, sizeof(char*));
-            strncpy(ret,  line+s , strlen(variable));
+            strncpy(ret,  line+s-1 , s*sizeof(char));
             fclose(file);
+            for(int l=s-1;l>=0;l--){
+                if(ret[l] == '\n'){
+                    ret[l] = '\0';
+                }
+            }
             return ret;
         }
     }

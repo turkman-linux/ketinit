@@ -15,7 +15,8 @@ void cgroup_init(const char* cgroup_name) {
 void cgroup_add(const char* cgroup_name){
     char cgroup_path[256];
     snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/%s/cgroup.procs", cgroup_name);
-    FILE* cg = fopen(cgroup_path, "w");
+    puts(cgroup_path);
+    FILE* cg = fopen(cgroup_path, "a");
     if (cg == NULL) {
         perror("Error opening cgroup.procs file");
         exit(EXIT_FAILURE);

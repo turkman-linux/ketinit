@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <pthread.h>
 #include "init.h"
 
 extern int start_service(char* name);
@@ -24,9 +23,16 @@ int main(int argc, char** argv){
     }
     struct dirent *de;
     DIR *dr = opendir("/etc/boot.d");
+    if (dr == NULL) {
+        return 1;
+    }
     while ((de = readdir(dr)) != NULL) {
-        pthread_t thread_id;
-        pthread_create(&thread_id, NULL, (void*)start_service, (void*)de->d_name);
+        if(strlen(de->d_name) > 0 && de->d_name[0] == '.'){
+            continue;
+        }
+        if(fork()){
+            service(de->d_name, START);
+        }
     }
     closedir(dr);
     return 0;

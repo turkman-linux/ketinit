@@ -52,7 +52,7 @@ void redirect_log(const char* name){
     snprintf(log_path, sizeof(log_path), "/var/log/services/%s.log", name);
     
     // Open the file to redirect both stdout and stderr
-    out_file = freopen(log_path, "w", stdout);
+    out_file = fopen(log_path, "w");
     if (out_file == NULL) {
         perror("freopen");
         exit(EXIT_FAILURE);
@@ -60,6 +60,11 @@ void redirect_log(const char* name){
 
     // Redirect stderr to the same file as stdout
     if (dup2(fileno(out_file), STDERR_FILENO) == -1) {
+        perror("dup2");
+        exit(EXIT_FAILURE);
+    }
+        // Redirect stderr to the same file as stdout
+    if (dup2(fileno(out_file), STDOUT_FILENO) == -1) {
         perror("dup2");
         exit(EXIT_FAILURE);
     }
