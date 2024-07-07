@@ -6,11 +6,10 @@
 
 #include "init.h"
 
-static void execute_service(char* name, char* arg){
+void execute_service(char* name, char* arg){
     char command_path[256];
     snprintf(command_path, sizeof(command_path), "/etc/boot.d/%s", name);
     char* args[] = {command_path, arg, NULL};
-    //char* fname = get_value(name, "name");
     execvp(command_path, args);
 }
 
@@ -41,6 +40,14 @@ int service(char* name, int status){
     int pid;
     switch(status) {
         case START:
+            if(cgroup_check_running(name)){
+                return 0;
+            }
+            int len;
+            char** deps = get_value_array(name, "depends", &len);
+            for(int i=0;i<len;i++){
+                service(deps[i], START);
+            }
             cgroup_init(name);
             pid = fork();
             if (pid == 0){
@@ -99,10 +106,28 @@ char* get_value(char* name, char* variable){
                 if(ret[l] == '\n'){
                     ret[l] = '\0';
                 }
+                if (ret[0] == '"' && ret[l] == '"'){
+                    ret++;
+                    ret[l] = '\0';
+                }
             }
             return ret;
         }
     }
     fclose(file);
     return "";
+}
+
+char** get_value_array(char* name, char* variable, int* len){
+    char* value = get_value(name, variable);
+    *len = 0;
+    char **tokens = malloc(sizeof(char*));
+    char *token = strtok(value, " ");
+    while (token != NULL) {
+        tokens = realloc(tokens, (*len + 1) * sizeof(char*));
+        tokens[*len] = strdup(token);
+        (*len)++;
+        token = strtok(NULL, " ");
+    }
+    return tokens;
 }

@@ -11,7 +11,7 @@ int cgroup_exists(const char* cgroup_name);
 
 int service(char* name, int status);
 char* get_value(char* name, char* variable);
-
+char** get_value_array(char* name, char* variable, int* len);
 void init_mount();
 
 void redirect_log(const char* name);
