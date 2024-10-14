@@ -20,6 +20,8 @@ void redirect_log(const char* name);
 #define STOP 0
 #define STATUS 2
 #define KILL 3
+#define ENABLE 4
+#define DISABLE 5
 
 #include <string.h>
 #define startswith(A,B) \

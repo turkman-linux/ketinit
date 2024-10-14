@@ -7,7 +7,7 @@
 #include "init.h"
 
 void execute_service(char* name, char* arg){
-    char command_path[256];
+    char command_path[1024];
     snprintf(command_path, sizeof(command_path), "/etc/boot.d/%s", name);
     if(access(command_path, F_OK) != 0) {
         exit(127);
@@ -30,6 +30,7 @@ void service_exit_event(char* name, int status){
     if(status == 0){
         printf("[OK] %s\n", name);
     } else {
+        cgroup_kill(name);
         printf("[FAIL] %s (%d)\n", name, status / 256);
     }
 }
@@ -37,15 +38,21 @@ void service_exit_event(char* name, int status){
 int service(char* name, int status){
     int exit_code;
     int pid;
+    char source_path[1024];
+    char target_path[1024];
     switch(status) {
         case START:
-            if(cgroup_check_running(name)){
+            if(cgroup_exists(name)){
                 return 0;
             }
             int len;
             char** deps = get_value_array(name, "depends", &len);
+            int status = 0;
             for(int i=0;i<len;i++){
-                service(deps[i], START);
+                status = service(deps[i], START);
+                if (status != 0) {
+                    return status;
+                }
             }
             cgroup_init(name);
             pid = fork();
@@ -83,12 +90,23 @@ int service(char* name, int status){
                 printf("Service %s : STOP\n", name);
             }
             return 0;
+        case ENABLE:
+            snprintf(source_path, sizeof(source_path), "../ket/%s", name);
+            snprintf(target_path, sizeof(target_path), "/etc/boot.d/%s", name);
+            symlink(source_path, target_path);
+            break;
+        case DISABLE:
+            snprintf(target_path, sizeof(target_path), "/etc/boot.d/%s", name);
+            if(access(target_path, F_OK) == 0) {
+                remove(target_path);
+            }
+            break;
     }
     return 1;
 }
 
 char* get_value(char* name, char* variable){
-    char path[256];
+    char path[1024];
     snprintf(path, sizeof(path), "/etc/boot.d/%s", name);
     FILE *file = fopen(path,"r");
     char line[1024];

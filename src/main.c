@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <limits.h>
 #include "init.h"
 
 extern int start_service(char* name);
@@ -16,6 +17,8 @@ int main(int argc, char** argv){
             return service(argv[1], STATUS) == 0;
         }else if(strcmp(argv[2], "kill") == 0){
             return service(argv[1], KILL) == 0;
+        }else if(strcmp(argv[2], "enable") == 0){
+            return service(argv[1], ENABLE) == 0;
         }
     }
     if(getpid() == 1){
@@ -35,7 +38,9 @@ int main(int argc, char** argv){
             return 0;
         }
     }
-    puts("yuh");
     closedir(dr);
+    while(1){
+        sleep(INT_MAX);
+    }
     return 0;
 }

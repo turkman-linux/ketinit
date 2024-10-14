@@ -34,7 +34,9 @@ void cgroup_kill(const char* cgroup_name) {
     }
     fprintf(cg,"%d", 1);
     fclose(cg);
-    remove(cgroup_path);
+    /* removing cgroup */
+    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/ket/%s", cgroup_name);
+    rmdir(cgroup_path);
 }
 
 int cgroup_exists(const char* cgroup_name){
