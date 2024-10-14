@@ -1,0 +1,7 @@
+#!/bin/sh
+name="hostname"
+if [ -f /etc/hostname ] ; then
+    cat /etc/hostname > /proc/sys/kernel/hostname
+else
+    echo "localhost.localdomain" > /proc/sys/kernel/hostname
+fi

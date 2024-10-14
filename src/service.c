@@ -8,7 +8,7 @@
 
 void execute_service(char* name, char* arg){
     char command_path[1024];
-    snprintf(command_path, sizeof(command_path), "/etc/boot.d/%s", name);
+    snprintf(command_path, sizeof(command_path), "/etc/ket/%s", name);
     if(access(command_path, F_OK) != 0) {
         exit(127);
     }

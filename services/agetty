@@ -1,0 +1,16 @@
+#!/bin/sh
+name="agetty"
+agetty="/sbin/agetty"
+
+function respawn(){
+    while true ; do
+        $*
+        sleep 0.1
+    done
+}
+
+# start all tty sessions
+for tty in {1..6} ; do
+    respawn $getty 38400 tty$tty linux &
+done
+wait
