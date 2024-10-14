@@ -8,13 +8,13 @@
 
 void cgroup_init(const char* cgroup_name) {
     char cgroup_path[256];
-    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/%s", cgroup_name);
+    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/ket/%s", cgroup_name);
     create_dir(cgroup_path);
 }
 
 void cgroup_add(const char* cgroup_name){
     char cgroup_path[256];
-    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/%s/cgroup.procs", cgroup_name);
+    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/ket/%s/cgroup.procs", cgroup_name);
     FILE* cg = fopen(cgroup_path, "a");
     if (cg == NULL) {
         perror("Error opening cgroup.procs file");
@@ -26,7 +26,7 @@ void cgroup_add(const char* cgroup_name){
 
 void cgroup_kill(const char* cgroup_name) {
     char cgroup_path[256];
-    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/%s/cgroup.kill", cgroup_name);
+    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/ket/%s/cgroup.kill", cgroup_name);
     FILE* cg = fopen(cgroup_path, "w");
     if (cg == NULL) {
         perror("Error opening cgroup.kill file");
@@ -39,14 +39,17 @@ void cgroup_kill(const char* cgroup_name) {
 
 int cgroup_exists(const char* cgroup_name){
     char cgroup_path[256];
-    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/%s/", cgroup_name);
+    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/ket/%s/", cgroup_name);
     return isdir(cgroup_path);
 }
 
 bool cgroup_check_running(const char* cgroup_name) {
     char cgroup_path[256];
-    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/%s/cgroup.procs", cgroup_name);
+    snprintf(cgroup_path, sizeof(cgroup_path), "/sys/fs/cgroup/ket/%s/cgroup.procs", cgroup_name);
     FILE* file = fopen(cgroup_path, "r");
+    if (file == NULL) {
+        return 0;
+    }
     char buffer[1];
     size_t bytes_read = fread(buffer, 1, sizeof(buffer), file);
     fclose(file);

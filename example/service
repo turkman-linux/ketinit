@@ -1,0 +1,5 @@
+#!/bin/sh
+name="example"
+depends="foo bar"
+
+exec /usr/bin/example-daemon --example-parameter

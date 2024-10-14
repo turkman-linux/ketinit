@@ -9,6 +9,9 @@
 void execute_service(char* name, char* arg){
     char command_path[256];
     snprintf(command_path, sizeof(command_path), "/etc/boot.d/%s", name);
+    if(access(command_path, F_OK) != 0) {
+        exit(127);
+    }
     char* args[] = {command_path, arg, NULL};
     execvp(command_path, args);
 }
@@ -21,10 +24,6 @@ void init_mount(){
     mount("proc", "/proc", "proc", 0, NULL);
     mount("tmpfs", "/run", "tmpfs", 0, NULL);
     mount("none", "/sys/fs/cgroup", "cgroup2", 0, NULL);
-}
-
-int start_service(char* name){
-    return service(name,START);
 }
 
 void service_exit_event(char* name, int status){
@@ -57,7 +56,7 @@ int service(char* name, int status){
             }
             waitpid(pid, &exit_code,0);
             service_exit_event(name, exit_code);
-            exit(exit_code);
+            return exit_code;
             break;
         case STOP:
             pid = fork();
@@ -69,7 +68,7 @@ int service(char* name, int status){
             waitpid(pid, &exit_code,0);
             cgroup_kill(name);
             service_exit_event(name, exit_code);
-            exit(exit_code);
+            return exit_code;
             break;
         case KILL:
             cgroup_kill(name);
@@ -97,17 +96,23 @@ char* get_value(char* name, char* variable){
         return "";
     }
     while (fgets(line, sizeof(line), file)) {
-        if(startswith(line, variable)) {
+        if (strlen(line) < 4 || line[0] == '#') {
+            continue;
+        }
+        if (startswith(line, variable) && startswith(line+strlen(variable), "=\"")) {
             int s = strlen(line) - strlen(variable);
+            int ss = strlen(variable);
             char* ret = calloc(s, sizeof(char*));
-            strncpy(ret,  line+s-1 , s*sizeof(char));
+            strncpy(ret,  line+ss+2 , s*sizeof(char));
             fclose(file);
             for(int l=s-1;l>=0;l--){
                 if(ret[l] == '\n'){
                     ret[l] = '\0';
                 }
-                if (ret[0] == '"' && ret[l] == '"'){
+                if (ret[0] == '"'){
                     ret++;
+                }
+                if (ret[l] == '"'){
                     ret[l] = '\0';
                 }
             }
