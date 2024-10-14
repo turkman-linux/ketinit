@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/mount.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 
 #include "init.h"
 
@@ -12,6 +13,7 @@ void execute_service(char* name, char* arg){
     if(access(command_path, F_OK) != 0) {
         exit(127);
     }
+    chmod(command_path, 0755);
     char* args[] = {command_path, arg, NULL};
     execvp(command_path, args);
 }
@@ -23,7 +25,7 @@ void init_mount(){
     mount("sysfs", "/sys", "sysfs", 0, NULL);
     mount("proc", "/proc", "proc", 0, NULL);
     mount("tmpfs", "/run", "tmpfs", 0, NULL);
-    mount("none", "/sys/fs/cgroup", "cgroup2", 0, NULL);
+    mount("cgroup2", "/sys/fs/cgroup", "cgroup2", 0, NULL);
 }
 
 void service_exit_event(char* name, int status){

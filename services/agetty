@@ -11,6 +11,7 @@ respawn(){
 
 # start all tty sessions
 for tty in 1 2 3 4 5 6 ; do
-    respawn $agetty 38400 tty$tty linux &
+    exec <>/dev/tty$tty
+    respawn setsid $agetty 38400 tty$tty linux &
 done
 wait
