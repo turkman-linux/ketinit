@@ -2,7 +2,7 @@
 name="agetty"
 agetty="/sbin/agetty"
 
-function respawn(){
+respawn(){
     while true ; do
         $*
         sleep 0.1
@@ -10,7 +10,7 @@ function respawn(){
 }
 
 # start all tty sessions
-for tty in {1..6} ; do
-    respawn $getty 38400 tty$tty linux &
+for tty in 1 2 3 4 5 6 ; do
+    respawn $agetty 38400 tty$tty linux &
 done
 wait

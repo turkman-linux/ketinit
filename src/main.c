@@ -31,6 +31,7 @@ int main(int argc, char** argv){
     if (dr == NULL) {
         return 1;
     }
+    fclose(stdin);
     while ((de = readdir(dr)) != NULL) {
         if(strlen(de->d_name) > 0 && de->d_name[0] == '.'){
             continue;
