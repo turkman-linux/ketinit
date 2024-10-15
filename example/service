@@ -1,5 +1,13 @@
 #!/bin/sh
+# define service name
 name="example"
+# define dependencies
 depends="foo bar"
-
+# service run as test user
+user="test"
+# daemon services can run in background
+daemon=true
+# wait until file ready
+waitfile="/run/test/foo"
+# replace service daemon with command
 exec /usr/bin/example-daemon --example-parameter

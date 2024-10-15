@@ -5,6 +5,10 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
+#include <pwd.h>
+
+#define SLEEP_TIME 300
+
 #include "init.h"
 
 void execute_service(char* name, char* arg){
@@ -30,7 +34,7 @@ void init_mount(){
 
 void service_exit_event(char* name, int status){
     if(status == 0){
-        printf("[OK] %s\n", name);
+        printf("[DONE] %s\n", name);
     } else {
         cgroup_kill(name);
         printf("[FAIL] %s (%d)\n", name, status / 256);
@@ -47,8 +51,10 @@ int service(char* name, int status){
             if(cgroup_exists(name)){
                 return 0;
             }
+            /* Dependencies */
             int len;
             char** deps = get_value_array(name, "depends", &len);
+            char* user = get_value(name, "user");
             int status = 0;
             for(int i=0;i<len;i++){
                 status = service(deps[i], START);
@@ -56,16 +62,37 @@ int service(char* name, int status){
                     return status;
                 }
             }
+            /* wait until file ready */
+            char* wfile = get_value(name, "waitfile");
+            if (strcmp(wfile, "") != 0) {
+                waitfile(wfile);
+            }
+            printf("[START] %s\n", name);
             cgroup_init(name);
             pid = fork();
             if (pid == 0){
                 cgroup_add(name);
                 redirect_log(name);
+                if(strcmp(user, "") != 0) {
+                    struct passwd *pw = getpwnam(user);
+                    if (pw == NULL) {
+                        fprintf(stderr, "User %s not found.\n", user);
+                        exit(1);
+                    }
+                    if (setuid(pw->pw_uid) != 0) {
+                        perror("setuid failed");
+                        exit(1);
+                    }
+                }
                 execute_service(name, "start");
             }
-            waitpid(pid, &exit_code,0);
-            service_exit_event(name, exit_code);
-            return exit_code;
+            if(strcmp(get_value(name, "daemon"), "true") == 0) {
+                return 0;
+            } else {
+                waitpid(pid, &exit_code,0);
+                service_exit_event(name, exit_code);
+                return exit_code;
+            }
             break;
         case STOP:
             pid = fork();
@@ -106,6 +133,17 @@ int service(char* name, int status){
     }
     return 1;
 }
+
+/* wait until file exists */
+int waitfile(char *fname){
+    while(1){
+       if(access( fname, F_OK ) == 0 ){
+           return 0; /* Found */
+       }
+       usleep(SLEEP_TIME*1000);
+    }
+}
+
 
 char* get_value(char* name, char* variable){
     char path[1024];

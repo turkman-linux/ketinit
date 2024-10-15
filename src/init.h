@@ -16,6 +16,8 @@ void init_mount();
 
 void redirect_log(const char* name);
 
+int waitfile(char *fname);
+
 #define START 1
 #define STOP 0
 #define STATUS 2
