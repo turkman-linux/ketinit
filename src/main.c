@@ -16,7 +16,7 @@ int main(int argc, char** argv){
     }
     if(argc>2){
         char action[1024];
-        strcpy(action,"");
+        memset(&action, 0, sizeof(action));
         if(strcmp(argv[2], "start") == 0){
             action[0] = START;
         }else if(strcmp(argv[2], "stop") == 0){
@@ -30,7 +30,7 @@ int main(int argc, char** argv){
         }else if(strcmp(argv[2], "disable") == 0){
             service(argv[1], DISABLE);
         }
-        strcat(action, argv[1]);
+        memcpy(action+1, argv[1], strlen(argv[1]));
         client_send(action);
         return 0;
     }
