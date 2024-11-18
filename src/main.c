@@ -22,16 +22,15 @@ int main(int argc, char** argv){
         }else if(strcmp(argv[2], "stop") == 0){
             action[0] = STOP;
         }else if(strcmp(argv[2], "status") == 0){
-            action[0] =  STATUS;
+            service(argv[1], STATUS);
         }else if(strcmp(argv[2], "kill") == 0){
             action[0] = KILL;
         }else if(strcmp(argv[2], "enable") == 0){
-            action[0] = ENABLE;
+            service(argv[1], ENABLE);
         }else if(strcmp(argv[2], "disable") == 0){
-            action[0] =  DISABLE;
+            service(argv[1], DISABLE);
         }
         strcat(action, argv[1]);
-        printf("%s %ld %d\n", action, strlen(action), action[0]);
         client_send(action);
         return 0;
     }
