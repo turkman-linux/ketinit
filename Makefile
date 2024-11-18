@@ -1,5 +1,5 @@
 build: clean
-	meson setup build
+	meson setup build --prefix=/
 	ninja -C build
 install:
 	ninja -C build install

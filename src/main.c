@@ -8,6 +8,12 @@
 extern int start_service(char* name);
 
 int main(int argc, char** argv){
+    if(getpid() == 1){
+        socket_init();
+        init_mount();
+    } else {
+        client_init();
+    }
     if(argc>2){
         char action[1024];
         strcpy(action,"");
@@ -28,12 +34,6 @@ int main(int argc, char** argv){
         printf("%s %ld %d\n", action, strlen(action), action[0]);
         client_send(action);
         return 0;
-    }
-    if(getpid() == 1){
-        socket_init();
-        init_mount();
-    } else {
-        client_init();
     }
     struct dirent *de;
     DIR *dr = opendir("/etc/boot.d");
