@@ -2,6 +2,10 @@
 name="agetty"
 agetty="/sbin/agetty"
 
+if [ "$1" != "start" ] ; then
+    exit 0
+fi
+
 respawn(){
     while true ; do
         $*

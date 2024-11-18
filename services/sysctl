@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ "$1" != "start" ] ; then
+    exit 0
+fi
+for conf in /etc/sysctl.conf /etc/sysctl.d/*.conf; do
+    while read var ; do
+        case "$var" in
+            ""|"#"*) continue;
+        esac
+        sysctl -v "$var" || true
+    done < "$conf"
+done

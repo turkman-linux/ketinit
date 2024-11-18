@@ -1,5 +1,10 @@
 #!/bin/sh
 name="hostname"
+
+if [ "$1" != "start" ] ; then
+    exit 0
+fi
+
 if [ -f /etc/hostname ] ; then
     cat /etc/hostname > /proc/sys/kernel/hostname
 else

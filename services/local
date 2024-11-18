@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ "$1" != "start" ] ; then
+    exit 0
+fi
+
+if [ -f /etc/rc.local ] ; then
+    exec /etc/rc.local
+fi
