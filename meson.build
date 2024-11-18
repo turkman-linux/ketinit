@@ -4,6 +4,8 @@ init_files = [
     'src/cgroup.c',
     'src/service.c',
     'src/util.c',
+    'src/socket_server.c',
+    'src/socket_client.c',
     'src/main.c'
 ]
 service_files = run_command('find', 'services','-type','f',check:true).stdout().strip().split('\n')

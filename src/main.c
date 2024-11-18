@@ -9,22 +9,31 @@ extern int start_service(char* name);
 
 int main(int argc, char** argv){
     if(argc>2){
+        char action[1024];
+        strcpy(action,"");
         if(strcmp(argv[2], "start") == 0){
-            return service(argv[1], START);
+            action[0] = START;
         }else if(strcmp(argv[2], "stop") == 0){
-            return service(argv[1], STOP);
+            action[0] = STOP;
         }else if(strcmp(argv[2], "status") == 0){
-            return service(argv[1], STATUS) == 0;
+            action[0] =  STATUS;
         }else if(strcmp(argv[2], "kill") == 0){
-            return service(argv[1], KILL) == 0;
+            action[0] = KILL;
         }else if(strcmp(argv[2], "enable") == 0){
-            return service(argv[1], ENABLE) == 0;
+            action[0] = ENABLE;
         }else if(strcmp(argv[2], "disable") == 0){
-            return service(argv[1], DISABLE) == 0;
+            action[0] =  DISABLE;
         }
+        strcat(action, argv[1]);
+        printf("%s %ld %d\n", action, strlen(action), action[0]);
+        client_send(action);
+        return 0;
     }
     if(getpid() == 1){
+        socket_init();
         init_mount();
+    } else {
+        client_init();
     }
     struct dirent *de;
     DIR *dr = opendir("/etc/boot.d");
@@ -43,7 +52,10 @@ int main(int argc, char** argv){
     }
     closedir(dr);
     while(1){
-        sleep(INT_MAX);
+        char* action = socket_read();
+        int status = action[0];
+        char* name = strdup(action+1);
+        service(name, status);
     }
     return 0;
 }

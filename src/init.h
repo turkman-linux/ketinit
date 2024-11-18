@@ -18,12 +18,18 @@ void redirect_log(const char* name);
 
 int waitfile(char *fname);
 
+void socket_init();
+void client_init();
+char* socket_read();
+void client_send(char* data);
+
+
 #define START 1
-#define STOP 0
-#define STATUS 2
-#define KILL 3
-#define ENABLE 4
-#define DISABLE 5
+#define STOP 2
+#define STATUS 3
+#define KILL 4
+#define ENABLE 5
+#define DISABLE 6
 
 #include <string.h>
 #define startswith(A,B) \
