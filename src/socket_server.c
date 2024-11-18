@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 
 #define SERVER_SOCK_FILE "/dev/ket"
-#define SOCKET_BUFFER_LENGTH 4
+#define SOCKET_BUFFER_LENGTH 1024
 
 int soc_server_fd;
 struct sockaddr_un server_from;
