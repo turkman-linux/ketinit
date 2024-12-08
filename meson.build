@@ -4,6 +4,7 @@ init_files = [
     'src/cgroup.c',
     'src/service.c',
     'src/util.c',
+    'src/sandbox.c',
     'src/socket_server.c',
     'src/socket_client.c',
     'src/main.c'

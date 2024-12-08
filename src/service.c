@@ -55,6 +55,7 @@ int service(char* name, int status){
             int len;
             char** deps = get_value_array(name, "depends", &len);
             char* user = get_value(name, "user");
+            char* priv = get_value(name, "privileged");
             int status = 0;
             for(int i=0;i<len;i++){
                 status = service(deps[i], START);
@@ -73,6 +74,9 @@ int service(char* name, int status){
             if (pid == 0){
                 cgroup_add(name);
                 redirect_log(name);
+                if(strcmp(priv, "true") != 0) {
+                    create_sandbox();
+                }
                 if(strcmp(user, "") != 0) {
                     struct passwd *pw = getpwnam(user);
                     if (pw == NULL) {

@@ -18,6 +18,8 @@ void redirect_log(const char* name);
 
 int waitfile(char *fname);
 
+void create_sandbox();
+
 void socket_init();
 void client_init();
 char* socket_read();
