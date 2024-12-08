@@ -37,6 +37,7 @@ int main(int argc, char** argv){
         client_send(action);
         return 0;
     }
+    redirect_log("ketinit");
     struct dirent *de;
     DIR *dr = opendir("/etc/boot.d");
     if (dr == NULL) {
