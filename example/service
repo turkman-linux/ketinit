@@ -7,6 +7,8 @@ depends="foo bar"
 user="test"
 # daemon services can run in background
 daemon=true
+# disable sandbox
+privileged=false
 # wait until file ready
 waitfile="/run/test/foo"
 # replace service daemon with command
