@@ -27,8 +27,10 @@ int main(int argc, char** argv){
             action[0] = KILL;
         }else if(strcmp(argv[2], "enable") == 0){
             service(argv[1], ENABLE);
+            return 0;
         }else if(strcmp(argv[2], "disable") == 0){
             service(argv[1], DISABLE);
+            return 0;
         }
         memcpy(action+1, argv[1], strlen(argv[1]));
         client_send(action);
