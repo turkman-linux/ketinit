@@ -85,7 +85,7 @@ int service(char* name, int status){
                     }
                     if (setuid(pw->pw_uid) != 0) {
                         perror("setuid failed");
-                        exit(1);
+                        return 1;
                     }
                 }
                 execute_service(name, "start");

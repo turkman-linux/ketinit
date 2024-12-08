@@ -6,9 +6,9 @@ depends="foo bar"
 # service run as test user
 user="test"
 # daemon services can run in background
-daemon=true
+daemon="true"
 # disable sandbox
-privileged=false
+privileged="false"
 # wait until file ready
 waitfile="/run/test/foo"
 # replace service daemon with command

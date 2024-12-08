@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <limits.h>
+#include <stdlib.h>
 #include "init.h"
 
 extern int start_service(char* name);
@@ -46,17 +47,17 @@ int main(int argc, char** argv){
         if(strlen(de->d_name) > 0 && de->d_name[0] == '.'){
             continue;
         }
-        if(fork() == 0){
-            service(de->d_name, START);
-            return 0;
-        }
+        service(de->d_name, START);
     }
     closedir(dr);
     while(1){
         char* action = socket_read();
         int status = action[0];
         char* name = strdup(action+1);
-        service(name, status);
+        if(fork() == 0){
+            int ret = service(name, status);
+            exit(ret);
+        }
     }
     return 0;
 }
